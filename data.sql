@@ -22,7 +22,7 @@ CREATE TABLE Article (
 
 CREATE TABLE Vetement (
     id INT PRIMARY KEY,
-    taille VARCHAR(5) NOT NULL CHECK (taille IN ('XS', 'S', 'M', 'L', 'XL', 'XXL')),
+    taille ENUM('XS', 'S', 'M', 'L', 'XL', 'XXL') NOT NULL,
     FOREIGN KEY (id) REFERENCES Article(id) ON DELETE CASCADE
 );
 
@@ -51,7 +51,7 @@ CREATE TABLE Commande (
     date_paiement DATETIME NOT NULL,
     date_livraison DATETIME,
     date_annulation DATETIME,
-    statut VARCHAR(20) NOT NULL CHECK (statut IN ('En attente','Expédiée','Livrée','Annulée')),
+    statut ENUM('EN_ATTENTE','EXPEDIEE','LIVREE','ANNULEE') NOT NULL,
     utilisateur_id INT NOT NULL,
     CHECK (
         date_livraison IS NULL OR date_livraison >= date_paiement
@@ -125,7 +125,6 @@ CREATE TABLE Remboursement (
     FOREIGN KEY (demande_remboursement_id) REFERENCES DemandeRemboursement(id) ON DELETE CASCADE
 );
 
-
 -- Populate
 INSERT INTO Utilisateur (email, prenom, nom, telephone, adr_rue, adr_numero, adr_ville, adr_code_postal, mot_de_passe, methode_paiement)
 VALUES
@@ -162,11 +161,11 @@ INSERT INTO Electromenager (id, marque) VALUES
 (8, 'Dyson');
 
 INSERT INTO Commande (date_paiement, date_livraison, statut, utilisateur_id) VALUES
-('2026-03-01 10:00:00', '2026-03-03 14:00:00', 'Livrée', 1),
-('2026-03-05 15:30:00', NULL, 'En attente', 1),
-('2026-03-07 12:00:00', '2026-03-09 16:00:00', 'Expédiée', 2),
-('2026-03-08 11:20:00', '2026-03-10 17:00:00', 'Livrée', 2),
-('2026-03-09 09:00:00', NULL, 'Annulée', 3);
+('2026-03-01 10:00:00', '2026-03-03 14:00:00', 'LIVREE', 1),
+('2026-03-05 15:30:00', NULL, 'EN_ATTENTE', 1),
+('2026-03-07 12:00:00', '2026-03-09 16:00:00', 'EXPEDIEE', 2),
+('2026-03-08 11:20:00', '2026-03-10 17:00:00', 'LIVREE', 2),
+('2026-03-09 09:00:00', NULL, 'ANNULEE', 3);
 
 INSERT INTO LigneCommande (commande_id, article_id, quantite) VALUES
 (1, 1, 2),
