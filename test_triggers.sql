@@ -100,3 +100,71 @@ INSERT INTO UsagePromo VALUES (1, 1, 1, '2026-03-20 10:00:00');
 
 -- Test valide (OK) : utilisation après date_debut
 INSERT INTO UsagePromo VALUES (1, 1, 1, '2026-04-05 10:00:00');
+
+
+-- ============================================================
+-- TRIGGER 10 : check_article_vetement
+-- ============================================================
+
+-- Test (KO) : article déjà un Livre (id = 3)
+INSERT INTO Vetement VALUES (3, 'M');
+
+-- Test (KO) : article déjà un Jeu Vidéo (id = 5)
+INSERT INTO Vetement VALUES (5, 'L');
+
+-- Test (KO) : article déjà un Électroménager (id = 7)
+INSERT INTO Vetement VALUES (7, 'XL');
+
+-- Test (OK) : article non spécialisé (id = 8 → Dyson)
+INSERT INTO Vetement VALUES (8, 'S');
+
+
+-- ============================================================
+-- TRIGGER 11 : check_article_livre
+-- ============================================================
+
+-- Test (KO) : article déjà un Vêtement (id = 1)
+INSERT INTO Livre VALUES (1, 'Auteur Test', 'ISBN-TEST-1');
+
+-- Test (KO) : article déjà un Jeu Vidéo (id = 6)
+INSERT INTO Livre VALUES (6, 'Auteur Test', 'ISBN-TEST-2');
+
+-- Test (KO) : article déjà un Électroménager (id = 7)
+INSERT INTO Livre VALUES (7, 'Auteur Test', 'ISBN-TEST-3');
+
+-- Test (OK) : article non spécialisé (id = 2 → Jean Bleu)
+INSERT INTO Livre VALUES (2, 'Auteur Test', 'ISBN-TEST-4');
+
+
+-- ============================================================
+-- TRIGGER 12 : check_article_jeu
+-- ============================================================
+
+-- Test (KO) : article déjà un Vêtement (id = 2)
+INSERT INTO JeuVideo VALUES (2, 'PC', 12);
+
+-- Test (KO) : article déjà un Livre (id = 4)
+INSERT INTO JeuVideo VALUES (4, 'Switch', 7);
+
+-- Test (KO) : article déjà un Électroménager (id = 8)
+INSERT INTO JeuVideo VALUES (8, 'PS5', 18);
+
+-- Test (OK) : article non spécialisé (id = 1 → T-shirt Rouge)
+INSERT INTO JeuVideo VALUES (1, 'Xbox', 16);
+
+
+-- ============================================================
+-- TRIGGER 13 : check_article_electro
+-- ============================================================
+
+-- Test (KO) : article déjà un Vêtement (id = 1)
+INSERT INTO Electromenager VALUES (1, 'TestMarque');
+
+-- Test (KO) : article déjà un Livre (id = 3)
+INSERT INTO Electromenager VALUES (3, 'TestMarque');
+
+-- Test (KO) : article déjà un Jeu Vidéo (id = 5)
+INSERT INTO Electromenager VALUES (5, 'TestMarque');
+
+-- Test (OK) : article non spécialisé (id = 2 → Jean Bleu)
+INSERT INTO Electromenager VALUES (2, 'TestMarque');

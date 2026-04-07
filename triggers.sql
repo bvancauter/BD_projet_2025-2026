@@ -70,7 +70,7 @@ BEGIN
     FROM Commande
     WHERE id = NEW.commande_id;
 
-    IF st NOT IN ('Livrée', 'Annulée') THEN
+    IF st NOT IN ('LIVREE', 'ANNULEE') THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Remboursement impossible : la commande doit être livrée ou annulée.';
     END IF;
@@ -109,7 +109,7 @@ BEGIN
     FROM Commande
     WHERE id = NEW.commande_id;
 
-    IF st = 'Annulée' THEN
+    IF st = 'ANNULEE' THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Impossible d ajouter un article : la commande est annulée.';
     END IF;
@@ -123,7 +123,7 @@ CREATE TRIGGER check_update_commande
 BEFORE UPDATE ON Commande
 FOR EACH ROW
 BEGIN
-    IF OLD.statut IN ('Livrée', 'Annulée') THEN
+    IF OLD.statut IN ('LIVREE', 'ANNULEE') THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Impossible de modifier une commande livrée ou annulée.';
     END IF;
@@ -143,7 +143,7 @@ BEGIN
     FROM Commande
     WHERE id = NEW.commande_id;
 
-    IF st <> 'Livrée' THEN
+    IF st <> 'LIVREE' THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Impossible de laisser un avis : la commande n est pas encore livrée.';
     END IF;
@@ -187,6 +187,102 @@ BEGIN
     IF NEW.date_utilisation < d_debut THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Impossible d utiliser la promotion avant sa date de début.';
+    END IF;
+END$$
+
+
+/* ============================================================
+   TRIGGER 10 : Empêcher qu’un article déjà spécialisé soit inséré dans Vetement
+   ============================================================ */
+CREATE TRIGGER check_article_vetement
+BEFORE INSERT ON Vetement
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM Livre WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Livre.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM JeuVideo WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Jeu Vidéo.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Electromenager WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Électroménager.';
+    END IF;
+END$$
+
+
+/* ============================================================
+   TRIGGER 11 : Empêcher qu’un article déjà spécialisé soit inséré dans Livre
+   ============================================================ */
+CREATE TRIGGER check_article_livre
+BEFORE INSERT ON Livre
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM Vetement WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Vêtement.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM JeuVideo WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Jeu Vidéo.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Electromenager WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Électroménager.';
+    END IF;
+END$$
+
+
+/* ============================================================
+   TRIGGER 12 : Empêcher qu’un article déjà spécialisé soit inséré dans JeuVideo
+   ============================================================ */
+CREATE TRIGGER check_article_jeu
+BEFORE INSERT ON JeuVideo
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM Vetement WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Vêtement.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Livre WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Livre.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Electromenager WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Électroménager.';
+    END IF;
+END$$
+
+
+/* ============================================================
+   TRIGGER 13 : Empêcher qu’un article déjà spécialisé soit inséré dans Electromenager
+   ============================================================ */
+CREATE TRIGGER check_article_electro
+BEFORE INSERT ON Electromenager
+FOR EACH ROW
+BEGIN
+    IF EXISTS (SELECT 1 FROM Vetement WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Vêtement.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM Livre WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Livre.';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM JeuVideo WHERE id = NEW.id) THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Impossible : cet article est déjà un Jeu Vidéo.';
     END IF;
 END$$
 
