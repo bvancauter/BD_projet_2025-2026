@@ -125,6 +125,21 @@ CREATE TABLE Remboursement (
     FOREIGN KEY (demande_remboursement_id) REFERENCES DemandeRemboursement(id) ON DELETE CASCADE
 );
 
+-- Index
+CREATE INDEX idx_commande_utilisateur ON Commande(utilisateur_id);
+
+CREATE INDEX idx_lignecommande_article ON LigneCommande(article_id);
+
+CREATE INDEX idx_avis_utilisateur ON Avis(utilisateur_id);
+CREATE INDEX idx_avis_article ON Avis(article_id);
+
+CREATE INDEX idx_article_nom ON Article(nom);
+CREATE INDEX idx_article_prix ON Article(prix);
+
+CREATE INDEX idx_commande_datepaiement ON Commande(date_paiement);
+CREATE INDEX idx_commande_datelivraison ON Commande(date_livraison);
+
+
 -- Populate
 INSERT INTO Utilisateur (email, prenom, nom, telephone, adr_rue, adr_numero, adr_ville, adr_code_postal, mot_de_passe, methode_paiement)
 VALUES
