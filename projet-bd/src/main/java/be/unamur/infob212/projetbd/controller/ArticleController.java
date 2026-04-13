@@ -1,7 +1,7 @@
 package be.unamur.infob212.projetbd.controller;
 
 import be.unamur.infob212.projetbd.model.Article;
-import be.unamur.infob212.projetbd.repository.ArticleRepository;
+import be.unamur.infob212.projetbd.service.ArticleService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -9,14 +9,14 @@ import java.util.List;
 @RequestMapping("/articles")
 public class ArticleController {
 
-    private final ArticleRepository articleRepository;
+    private final ArticleService articleService;
 
-    public ArticleController(ArticleRepository articleRepository) {
-        this.articleRepository = articleRepository;
+    public ArticleController(ArticleService articleService) {
+        this.articleService = articleService;
     }
 
     @GetMapping
     public List<Article> getAllArticles() {
-        return articleRepository.findAll();
+        return articleService.getAllArticles();
     }
 }
