@@ -25,6 +25,7 @@ public class UtilisateurService {
     }
 
     public Utilisateur create(Utilisateur u) {
+        u.setRole(Utilisateur.Role.CLIENT);
         return utilisateurRepository.save(u);
     }
 
@@ -45,5 +46,26 @@ public class UtilisateurService {
 
     public void delete(Integer id) {
         utilisateurRepository.deleteById(id);
+    }
+
+    /**
+     * Désinscription RGPD : anonymise toutes les données personnelles du compte
+     * tout en conservant l'historique des commandes et des avis.
+     * Après cette opération, il n'est plus possible d'identifier le client
+     * à partir des données restantes.
+     */
+    public void anonymize(Integer id) {
+        Utilisateur existing = getById(id);
+        existing.setEmail("anonyme_" + id + "@supprime.invalid");
+        existing.setPrenom("Anonyme");
+        existing.setNom("Anonyme");
+        existing.setTelephone(null);
+        existing.setAdrRue("Anonyme");
+        existing.setAdrNumero("0");
+        existing.setAdrVille("Anonyme");
+        existing.setAdrCodePostal("00000");
+        existing.setMotDePasse("SUPPRIME");
+        existing.setMethodePaiement("SUPPRIME");
+        utilisateurRepository.save(existing);
     }
 }
