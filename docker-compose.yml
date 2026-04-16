@@ -11,3 +11,5 @@ services:
     volumes:
       - "./data.sql:/docker-entrypoint-initdb.d/1.sql"
       - "./triggers.sql:/docker-entrypoint-initdb.d/2_triggers.sql"
+      - "./views.sql:/docker-entrypoint-initdb.d/3_views.sql"
+      - "./permissions.sql:/docker-entrypoint-initdb.d/4_permissions.sql"
