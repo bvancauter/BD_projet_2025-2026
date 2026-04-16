@@ -18,33 +18,16 @@ CREATE TABLE Article (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    prix DECIMAL(10,2) NOT NULL CHECK (prix > 0)
-);
+    prix DECIMAL(10,2) NOT NULL CHECK (prix > 0),
 
-CREATE TABLE Vetement (
-    id INT PRIMARY KEY,
-    taille ENUM('XS', 'S', 'M', 'L', 'XL', 'XXL') NOT NULL,
-    FOREIGN KEY (id) REFERENCES Article(id) ON DELETE CASCADE
-);
+    type ENUM('LIVRE','VETEMENT','JEUVIDEO','ELECTRO') NOT NULL,
 
-CREATE TABLE Livre (
-    id INT PRIMARY KEY,
-    auteur VARCHAR(255) NOT NULL,
-    isbn VARCHAR(50) UNIQUE NOT NULL,
-    FOREIGN KEY (id) REFERENCES Article(id) ON DELETE CASCADE
-);
-
-CREATE TABLE JeuVideo (
-    id INT PRIMARY KEY,
-    plateforme VARCHAR(100) NOT NULL,
-    pegi INT NOT NULL CHECK (pegi IN (3, 7, 12, 16, 18)),
-    FOREIGN KEY (id) REFERENCES Article(id) ON DELETE CASCADE
-);
-
-CREATE TABLE Electromenager (
-    id INT PRIMARY KEY,
-    marque VARCHAR(100) NOT NULL,
-    FOREIGN KEY (id) REFERENCES Article(id) ON DELETE CASCADE
+    auteur VARCHAR(255),
+    isbn VARCHAR(50),
+    taille ENUM('XS','S','M','L','XL','XXL'),
+    plateforme VARCHAR(100),
+    pegi INT CHECK (pegi IN (3, 7, 12, 16, 18)),
+    marque VARCHAR(100)
 );
 
 CREATE TABLE Commande (
@@ -162,21 +145,17 @@ INSERT INTO Article (nom, description, prix) VALUES
 ('Mixeur Philips', 'Mixeur 800W', 89.99),
 ('Aspirateur Dyson', 'Aspirateur sans fil', 299.99);
 
-INSERT INTO Vetement (id, taille) VALUES
-(1, 'M'),
-(2, 'L');
+UPDATE Article SET type = 'VETEMENT', taille = 'M' WHERE id = 1;
+UPDATE Article SET type = 'VETEMENT', taille = 'L' WHERE id = 2;
 
-INSERT INTO Livre (id, auteur, isbn) VALUES
-(3, 'Antoine de Saint-Exupéry', '978-0156012195'),
-(4, 'J.K. Rowling', '978-0747532699');
+UPDATE Article SET type = 'LIVRE', auteur = 'Antoine de Saint-Exupéry', isbn = '978-0156012195' WHERE id = 3;
+UPDATE Article SET type = 'LIVRE', auteur = 'J.K. Rowling', isbn = '978-0747532699' WHERE id = 4;
 
-INSERT INTO JeuVideo (id, plateforme, pegi) VALUES
-(5, 'Dreamcast', 12),
-(6, 'PC', 18);
+UPDATE Article SET type = 'JEUVIDEO', plateforme = 'Dreamcast', pegi = 12 WHERE id = 5;
+UPDATE Article SET type = 'JEUVIDEO', plateforme = 'PC', pegi = 18 WHERE id = 6;
 
-INSERT INTO Electromenager (id, marque) VALUES
-(7, 'Philips'),
-(8, 'Dyson');
+UPDATE Article SET type = 'ELECTRO', marque = 'Philips' WHERE id = 7;
+UPDATE Article SET type = 'ELECTRO', marque = 'Dyson' WHERE id = 8;
 
 INSERT INTO Commande (date_paiement, date_livraison, statut, utilisateur_id) VALUES
 ('2026-03-01 10:00:00', '2026-03-03 14:00:00', 'LIVREE', 1),
@@ -215,3 +194,12 @@ INSERT INTO DemandeRemboursement (commande_id, date_demande, raison) VALUES
 (5, '2026-03-10 09:30:00', 'Produit défectueux');
 INSERT INTO Remboursement (demande_remboursement_id, date_remboursement) VALUES
 (1, '2026-03-15 11:00:00');
+
+ALTER TABLE Article
+ADD CONSTRAINT chk_article_type CHECK (
+    type IS NULL
+ OR (type = 'LIVRE'    AND auteur IS NOT NULL AND isbn IS NOT NULL AND taille IS NULL AND plateforme IS NULL AND pegi IS NULL AND marque IS NULL)
+ OR (type = 'VETEMENT' AND taille IS NOT NULL AND auteur IS NULL AND isbn IS NULL AND plateforme IS NULL AND pegi IS NULL AND marque IS NULL)
+ OR (type = 'JEUVIDEO' AND plateforme IS NOT NULL AND pegi IS NOT NULL AND auteur IS NULL AND isbn IS NULL AND taille IS NULL AND marque IS NULL)
+ OR (type = 'ELECTRO'  AND marque IS NOT NULL AND auteur IS NULL AND isbn IS NULL AND taille IS NULL AND plateforme IS NULL AND pegi IS NULL)
+);
