@@ -10,6 +10,7 @@ CREATE TABLE Utilisateur (
     adr_ville VARCHAR(100) NOT NULL,
     adr_code_postal VARCHAR(20) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
+    role ENUM('CLIENT','COMPTABLE','MARKETING') NOT NULL DEFAULT 'CLIENT',
     methode_paiement VARCHAR(100) NOT NULL
 );
 
@@ -103,11 +104,13 @@ CREATE TABLE UsagePromo (
     utilisateur_id INT,
     promotion_id INT,
     article_id INT,
+    commande_id INT NOT NULL,
     date_utilisation DATETIME NOT NULL,
-    PRIMARY KEY (utilisateur_id, promotion_id, article_id),
+    PRIMARY KEY (utilisateur_id, promotion_id, article_id, commande_id),
     FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur(id) ON DELETE CASCADE,
     FOREIGN KEY (promotion_id) REFERENCES Promotion(id) ON DELETE CASCADE,
-    FOREIGN KEY (article_id) REFERENCES Article(id) ON DELETE CASCADE
+    FOREIGN KEY (article_id) REFERENCES Article(id) ON DELETE CASCADE,
+    FOREIGN KEY (commande_id)    REFERENCES Commande(id) ON DELETE CASCADE
 );
 
 CREATE TABLE DemandeRemboursement (
@@ -141,13 +144,13 @@ CREATE INDEX idx_commande_datelivraison ON Commande(date_livraison);
 
 
 -- Populate
-INSERT INTO Utilisateur (email, prenom, nom, telephone, adr_rue, adr_numero, adr_ville, adr_code_postal, mot_de_passe, methode_paiement)
+INSERT INTO Utilisateur (email, prenom, nom, telephone, adr_rue, adr_numero, adr_ville, adr_code_postal, mot_de_passe, methode_paiement, role)
 VALUES
-('alice@example.com', 'Alice', 'Dupont', '0601020304', 'Rue des Lilas', '12', 'Paris', '75001', 'mdpAlice123', 'Carte bancaire'),
-('bob@example.com', 'Bob', 'Martin', '0605060708', 'Avenue des Champs', '34', 'Lyon', '69001', 'mdpBob123', 'Paypal'),
-('carol@example.com', 'Carol', 'Durand', '0611121314', 'Boulevard Saint-Germain', '56', 'Paris', '75005', 'mdpCarol123', 'Carte bancaire'),
-('dave@example.com', 'Dave', 'Leroy', '0615161718', 'Rue de la Paix', '78', 'Marseille', '13001', 'mdpDave123', 'Carte bancaire'),
-('eve@example.com', 'Eve', 'Moreau', '0619202122', 'Place Bellecour', '90', 'Lyon', '69002', 'mdpEve123', 'Paypal');
+('alice@example.com', 'Alice', 'Dupont', '0601020304', 'Rue des Lilas', '12', 'Paris', '75001', 'mdpAlice123', 'Carte bancaire', 'CLIENT'),
+('bob@example.com', 'Bob', 'Martin', '0605060708', 'Avenue des Champs', '34', 'Lyon', '69001', 'mdpBob123', 'Paypal', 'CLIENT'),
+('carol@example.com', 'Carol', 'Durand', '0611121314', 'Boulevard Saint-Germain', '56', 'Paris', '75005', 'mdpCarol123', 'Carte bancaire', 'COMPTABLE'),
+('dave@example.com', 'Dave', 'Leroy', '0615161718', 'Rue de la Paix', '78', 'Marseille', '13001', 'mdpDave123', 'Carte bancaire', 'MARKETING'),
+('eve@example.com', 'Eve', 'Moreau', '0619202122', 'Place Bellecour', '90', 'Lyon', '69002', 'mdpEve123', 'Paypal', 'CLIENT');
 
 INSERT INTO Article (nom, description, prix) VALUES
 ('T-shirt Rouge', 'T-shirt 100% coton, rouge', 19.99),
@@ -177,10 +180,12 @@ INSERT INTO Electromenager (id, marque) VALUES
 
 INSERT INTO Commande (date_paiement, date_livraison, statut, utilisateur_id) VALUES
 ('2026-03-01 10:00:00', '2026-03-03 14:00:00', 'LIVREE', 1),
-('2026-03-05 15:30:00', NULL, 'EN_ATTENTE', 1),
+('2026-03-05 15:30:00', NULL,                  'EN_ATTENTE', 1),
 ('2026-03-07 12:00:00', '2026-03-09 16:00:00', 'EXPEDIEE', 2),
 ('2026-03-08 11:20:00', '2026-03-10 17:00:00', 'LIVREE', 2),
-('2026-03-09 09:00:00', NULL, 'ANNULEE', 3);
+('2026-03-09 09:00:00', NULL,                  'ANNULEE', 3),
+('2026-04-02 11:00:00', '2026-04-05 14:00:00', 'LIVREE', 1),
+('2026-06-05 13:00:00', '2026-06-08 10:00:00', 'LIVREE', 2);
 
 INSERT INTO LigneCommande (commande_id, article_id, quantite) VALUES
 (1, 1, 2),
@@ -189,7 +194,9 @@ INSERT INTO LigneCommande (commande_id, article_id, quantite) VALUES
 (3, 5, 1),
 (3, 7, 1),
 (4, 4, 2),
-(4, 6, 1);
+(4, 6, 1),
+(6, 1, 1),
+(7, 2, 1);
 
 INSERT INTO Avis (utilisateur_id, article_id, commande_id, note, commentaire, date_avis) VALUES
 (1, 1, 1, 5, 'Super T-shirt !', '2026-03-04 10:00:00'),
@@ -200,9 +207,9 @@ INSERT INTO Promotion (nom, description, pourcentage, date_debut, date_fin) VALU
 ('Promo Printemps', '10% sur tous les articles', 10.00, '2026-04-01', '2026-04-30'),
 ('Soldes Été', '20% sur les vêtements', 20.00, '2026-06-01', '2026-06-30');
 
-INSERT INTO UsagePromo (utilisateur_id, promotion_id, article_id, date_utilisation) VALUES
-(1, 1, 1, '2026-04-02 12:00:00'),
-(2, 2, 2, '2026-06-05 14:00:00');
+INSERT INTO UsagePromo (utilisateur_id, promotion_id, article_id, commande_id, date_utilisation) VALUES
+(1, 1, 1, 6, '2026-04-02 12:00:00'),
+(2, 2, 2, 7, '2026-06-05 14:00:00');
 
 INSERT INTO DemandeRemboursement (commande_id, date_demande, raison) VALUES
 (5, '2026-03-10 09:30:00', 'Produit défectueux');
