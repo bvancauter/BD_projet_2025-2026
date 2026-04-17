@@ -13,5 +13,6 @@ public class CommandeFull {
     private LocalDateTime dateLivraison;
     private LocalDateTime dateAnnulation;
     private Integer utilisateurId;
+    private String utilisateurEmail;
     private List<LigneCommandeDto> lignes;
 }

@@ -1,5 +1,6 @@
 package be.unamur.infob212.projetbd.service;
 
+import be.unamur.infob212.projetbd.dto.Article.ArticleList;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeFull;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeList;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeSave;
@@ -83,7 +84,7 @@ public class CommandeService {
                 .orElseThrow(() -> new RuntimeException("COMMANDE_NOT_FOUND"));
 
         if (commande.getStatut() == Commande.Statut.LIVREE ||
-            commande.getStatut() == Commande.Statut.ANNULEE) {
+                commande.getStatut() == Commande.Statut.ANNULEE) {
             throw new RuntimeException("COMMANDE_NON_ANNULABLE");
         }
 
@@ -111,6 +112,9 @@ public class CommandeService {
         dto.setDateAnnulation(commande.getDateAnnulation());
         dto.setUtilisateurId(commande.getUtilisateurId());
 
+        utilisateurRepository.findById(commande.getUtilisateurId())
+                .ifPresent(u -> dto.setUtilisateurEmail(u.getEmail()));
+
         List<LigneCommandeDto> lignes = ligneCommandeRepository
                 .findByIdCommandeId(commande.getId())
                 .stream()
@@ -118,6 +122,16 @@ public class CommandeService {
                     LigneCommandeDto l = new LigneCommandeDto();
                     l.setArticleId(lc.getId().getArticleId());
                     l.setQuantite(lc.getQuantite());
+
+                    articleRepository.findById(lc.getId().getArticleId()).ifPresent(article -> {
+                        ArticleList articleDto = new ArticleList();
+                        articleDto.setId(article.getId());
+                        articleDto.setNom(article.getNom());
+                        articleDto.setDescription(article.getDescription());
+                        articleDto.setPrix(article.getPrix());
+                        l.setArticle(articleDto);
+                    });
+
                     return l;
                 })
                 .toList();
