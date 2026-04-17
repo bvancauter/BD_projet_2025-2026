@@ -28,6 +28,16 @@ public class ArticleService {
                 .map(this::toFullDto);
     }
 
+    public ArticleFull updateArticle(Integer id, ArticleFull dto) {
+
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found with id: " + id));
+
+        Article saved = articleRepository.save(updateEntity(article, dto));
+
+        return toFullDto(saved);
+    }
+
     private ArticleList toListDto(Article article) {
         ArticleList dto = new ArticleList();
         dto.setId(article.getId());
@@ -54,5 +64,19 @@ public class ArticleService {
         dto.setMarque(article.getMarque());
 
         return dto;
+    }
+
+    private Article updateEntity(Article article, ArticleFull dto) {
+        article.setNom(dto.getNom());
+        article.setDescription(dto.getDescription());
+        article.setPrix(dto.getPrix());
+        article.setAuteur(dto.getAuteur());
+        article.setIsbn(dto.getIsbn());
+        article.setTaille(dto.getTaille());
+        article.setPlateforme(dto.getPlateforme());
+        article.setPegi(dto.getPegi());
+        article.setMarque(dto.getMarque());
+
+        return article;
     }
 }
