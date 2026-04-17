@@ -2,6 +2,7 @@ package be.unamur.infob212.projetbd.service;
 
 import be.unamur.infob212.projetbd.dto.Article.ArticleFull;
 import be.unamur.infob212.projetbd.dto.Article.ArticleList;
+import be.unamur.infob212.projetbd.dto.Article.ArticleSave;
 import be.unamur.infob212.projetbd.model.Article;
 import be.unamur.infob212.projetbd.repository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,19 +17,28 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    public List<ArticleList> getAllArticles() {
+    public List<ArticleList> getAll() {
         return articleRepository.findAll()
                 .stream()
                 .map(this::toListDto)
                 .toList();
     }
 
-    public Optional<ArticleFull> getArticleById(Integer id) {
+    public Optional<ArticleFull> get(Integer id) {
         return articleRepository.findById(id)
                 .map(this::toFullDto);
     }
 
-    public ArticleFull updateArticle(Integer id, ArticleFull dto) {
+    public ArticleFull create(ArticleSave dto) {
+
+        Article article = toEntity(dto);
+
+        Article saved = articleRepository.save(article);
+
+        return toFullDto(saved);
+    }
+
+    public ArticleFull update(Integer id, ArticleFull dto) {
 
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article not found with id: " + id));
@@ -64,6 +74,23 @@ public class ArticleService {
         dto.setMarque(article.getMarque());
 
         return dto;
+    }
+
+    private Article toEntity(ArticleSave dto) {
+
+        Article article = new Article();
+
+        article.setNom(dto.getNom());
+        article.setDescription(dto.getDescription());
+        article.setPrix(dto.getPrix());
+        article.setAuteur(dto.getAuteur());
+        article.setIsbn(dto.getIsbn());
+        article.setTaille(dto.getTaille());
+        article.setPlateforme(dto.getPlateforme());
+        article.setPegi(dto.getPegi());
+        article.setMarque(dto.getMarque());
+
+        return article;
     }
 
     private Article updateEntity(Article article, ArticleFull dto) {
