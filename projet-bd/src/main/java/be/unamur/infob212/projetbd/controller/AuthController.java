@@ -2,88 +2,63 @@ package be.unamur.infob212.projetbd.controller;
 
 import be.unamur.infob212.projetbd.dto.auth.LoginRequest;
 import be.unamur.infob212.projetbd.dto.auth.RegisterRequest;
-import be.unamur.infob212.projetbd.model.Utilisateur;
-import be.unamur.infob212.projetbd.repository.UtilisateurRepository;
-import be.unamur.infob212.projetbd.service.JWTService;
+import be.unamur.infob212.projetbd.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UtilisateurRepository repository;
-    private final JWTService jwtService;
-    private final PasswordEncoder passwordEncoder;
-
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
-
-        Optional<Utilisateur> optionalUser =
-                repository.findByEmail(request.getEmail());
-
-        if(optionalUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Utilisateur introuvable");
-        }
-
-        Utilisateur user = optionalUser.get();
-
-        if(!passwordEncoder.matches(
-                request.getMotDePasse(),
-                user.getMotDePasse())) {
-
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Mot de passe invalide");
-        }
-
-        String token = jwtService.generateToken(user.getEmail());
-
-        return ResponseEntity.ok(token);
-    }
+    private final AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
 
-        if (repository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("Email déjà utilisé");
+        try {
+            authService.register(request);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Utilisateur créé");
+
+        } catch (RuntimeException e) {
+
+            if (e.getMessage().equals("EMAIL_EXISTS")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Email déjà utilisé");
+            }
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erreur");
         }
+    }
 
-        Utilisateur user = new Utilisateur();
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
 
-        user.setEmail(request.getEmail());
-        user.setPrenom(request.getPrenom());
-        user.setNom(request.getNom());
-        user.setTelephone(request.getTelephone());
+        try {
+            String token = authService.login(request);
+            return ResponseEntity.ok(token);
 
-        user.setAdrRue(request.getAdrRue());
-        user.setAdrNumero(request.getAdrNumero());
-        user.setAdrVille(request.getAdrVille());
-        user.setAdrCodePostal(request.getAdrCodePostal());
+        } catch (RuntimeException e) {
 
-        user.setMethodePaiement(request.getMethodePaiement());
+            if (e.getMessage().equals("USER_NOT_FOUND")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Utilisateur introuvable");
+            }
 
-        user.setMotDePasse(
-                passwordEncoder.encode(request.getMotDePasse())
-        );
+            if (e.getMessage().equals("BAD_PASSWORD")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Mot de passe invalide");
+            }
 
-        user.setRole(Utilisateur.Role.CLIENT);
-
-        repository.save(user);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("Utilisateur créé");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erreur");
+        }
     }
 }
