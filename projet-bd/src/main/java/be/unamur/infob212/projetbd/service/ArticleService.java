@@ -48,6 +48,14 @@ public class ArticleService {
         return toFullDto(saved);
     }
 
+    public void deleteArticle(Integer id) {
+
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Article not found with id: " + id));
+
+        articleRepository.delete(article);
+    }
+
     private ArticleList toListDto(Article article) {
         ArticleList dto = new ArticleList();
         dto.setId(article.getId());
