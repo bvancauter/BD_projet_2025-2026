@@ -14,32 +14,32 @@ public class Utilisateur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String email;
     private String prenom;
     private String nom;
     private String telephone;
 
-    @Column(name="adr_rue")
+    @Column(name = "adr_rue")
     private String adrRue;
 
-    @Column(name="adr_numero")
+    @Column(name = "adr_numero")
     private String adrNumero;
 
-    @Column(name="adr_ville")
+    @Column(name = "adr_ville")
     private String adrVille;
 
-    @Column(name="adr_code_postal")
+    @Column(name = "adr_code_postal")
     private String adrCodePostal;
 
-    @Column(name="mot_de_passe")
+    @Column(name = "mot_de_passe")
     private String motDePasse;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name="methode_paiement")
+    @Column(name = "methode_paiement")
     private String methodePaiement;
 
     public enum Role {

@@ -28,7 +28,7 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/v3/api-docs/**")
                 .permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll() // changer avec les roles apres
         );
 
         return http.build();

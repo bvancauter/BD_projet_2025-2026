@@ -1,6 +1,9 @@
 package be.unamur.infob212.projetbd.model;
+
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Entity
@@ -11,8 +14,24 @@ import lombok.*;
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String nom;
     private String description;
-    private double prix;
+    private Double prix;
+    private String auteur;
+    private String isbn;
+    @Enumerated(EnumType.STRING)
+    private Taille taille;
+    private String plateforme;
+    private Integer pegi;
+    private String marque;
+
+    public enum Taille {
+        XS,
+        S,
+        M,
+        L,
+        XL,
+        XXL
+    }
 }
