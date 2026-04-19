@@ -16,7 +16,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
 
-    public void register(RegisterRequest request) {
+    public void register(RegisterRequest request, Utilisateur.Role role) {
 
         if (repository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("EMAIL_EXISTS");
@@ -40,7 +40,7 @@ public class AuthService {
                 passwordEncoder.encode(request.getMotDePasse())
         );
 
-        user.setRole(Utilisateur.Role.CLIENT);
+        user.setRole(role);
 
         repository.save(user);
     }

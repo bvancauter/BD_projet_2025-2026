@@ -2,6 +2,7 @@ package be.unamur.infob212.projetbd.controller;
 
 import be.unamur.infob212.projetbd.dto.auth.LoginRequest;
 import be.unamur.infob212.projetbd.dto.auth.RegisterRequest;
+import be.unamur.infob212.projetbd.model.Utilisateur;
 import be.unamur.infob212.projetbd.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,13 +19,50 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
-
+    @PostMapping("/register/client")
+    public ResponseEntity<String> registerClient(@RequestBody RegisterRequest request) {
         try {
-            authService.register(request);
+            authService.register(request, Utilisateur.Role.CLIENT);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Utilisateur créé");
+                    .body("Compte client créé");
+
+        } catch (RuntimeException e) {
+
+            if (e.getMessage().equals("EMAIL_EXISTS")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Email déjà utilisé");
+            }
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erreur");
+        }
+    }
+
+    @PostMapping("/register/comptable")
+    public ResponseEntity<String> registerComptable(@RequestBody RegisterRequest request) {
+        try {
+            authService.register(request, Utilisateur.Role.COMPTABLE);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Compte comptable créé");
+
+        } catch (RuntimeException e) {
+
+            if (e.getMessage().equals("EMAIL_EXISTS")) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Email déjà utilisé");
+            }
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erreur");
+        }
+    }
+
+    @PostMapping("/register/marketing")
+    public ResponseEntity<String> registerMarketing(@RequestBody RegisterRequest request) {
+        try {
+            authService.register(request, Utilisateur.Role.MARKETING);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Compte marketing créé");
 
         } catch (RuntimeException e) {
 
