@@ -129,11 +129,11 @@ CREATE INDEX idx_commande_datelivraison ON Commande(date_livraison);
 -- Populate
 INSERT INTO Utilisateur (email, prenom, nom, telephone, adr_rue, adr_numero, adr_ville, adr_code_postal, mot_de_passe, methode_paiement, role)
 VALUES
-('alice@example.com', 'Alice', 'Dupont', '0601020304', 'Rue des Lilas', '12', 'Paris', '75001', 'mdpAlice123', 'Carte bancaire', 'CLIENT'),
-('bob@example.com', 'Bob', 'Martin', '0605060708', 'Avenue des Champs', '34', 'Lyon', '69001', 'mdpBob123', 'Paypal', 'CLIENT'),
-('carol@example.com', 'Carol', 'Durand', '0611121314', 'Boulevard Saint-Germain', '56', 'Paris', '75005', 'mdpCarol123', 'Carte bancaire', 'COMPTABLE'),
-('dave@example.com', 'Dave', 'Leroy', '0615161718', 'Rue de la Paix', '78', 'Marseille', '13001', 'mdpDave123', 'Carte bancaire', 'MARKETING'),
-('eve@example.com', 'Eve', 'Moreau', '0619202122', 'Place Bellecour', '90', 'Lyon', '69002', 'mdpEve123', 'Paypal', 'CLIENT');
+('alice@example.com', 'Alice', 'Dupont', '0601020304', 'Rue des Lilas', '12', 'Paris', '75001', '$2a$10$HIbBaVby8DU6rrTaJWO0g.Oz6o3QMW0yZ.BudkYejWmZmPHeroP1G', 'Carte bancaire', 'CLIENT'), -- mdpAlice123
+('bob@example.com', 'Bob', 'Martin', '0605060708', 'Avenue des Champs', '34', 'Lyon', '69001', '$2a$10$c03.S4uD7TKvaS9PDjwmTuZouuYDYmm5iJy0f1p0R4hPrpw6xnUr2', 'Paypal', 'CLIENT'), -- mdpBob123
+('carol@example.com', 'Carol', 'Durand', '0611121314', 'Boulevard Saint-Germain', '56', 'Paris', '75005', '$2a$10$M7CQUanT5MtyrhimohKLYebyX5AJgzMWRzQ1Gm5vZOOnca2TAkN.m', 'Carte bancaire', 'COMPTABLE'), -- mdpCarol123
+('dave@example.com', 'Dave', 'Leroy', '0615161718', 'Rue de la Paix', '78', 'Marseille', '13001', '$2a$10$k.fxzR1vmug4LJNdVGDFC.ek5BQEOV7uNVn5efeROlf3Hg7QNilFa', 'Carte bancaire', 'MARKETING'), -- mdpDave123
+('eve@example.com', 'Eve', 'Moreau', '0619202122', 'Place Bellecour', '90', 'Lyon', '69002', '$2a$10$K18VGJ8RBLUqNABb4LVWiewMFc0j0WD6ilC6.Jt.iUcJjqrmzgfzK', 'Paypal', 'CLIENT'); -- mdpEve123
 
 INSERT INTO Article (nom, description, prix) VALUES
 ('T-shirt Rouge', 'T-shirt 100% coton, rouge', 19.99),
