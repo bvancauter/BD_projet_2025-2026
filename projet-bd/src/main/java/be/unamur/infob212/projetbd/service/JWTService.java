@@ -30,4 +30,13 @@ public class JWTService {
                 .getPayload()
                 .getSubject();
     }
+
+    public String extractRole(String token) {
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("role", String.class);
+    }
 }

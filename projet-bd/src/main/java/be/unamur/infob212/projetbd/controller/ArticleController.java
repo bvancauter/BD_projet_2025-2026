@@ -6,6 +6,7 @@ import be.unamur.infob212.projetbd.dto.Article.ArticleSave;
 import be.unamur.infob212.projetbd.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -20,11 +21,13 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('CLIENT','MARKETING','COMPTABLE')")
     public ResponseEntity<List<ArticleList>> getAllArticles() {
         return ResponseEntity.ok(articleService.getAll());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CLIENT','MARKETING','COMPTABLE')")
     public ResponseEntity<ArticleFull> get(@PathVariable Integer id) {
 
         Optional<ArticleFull> article = articleService.get(id);
@@ -37,6 +40,7 @@ public class ArticleController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('MARKETING')")
     public ResponseEntity<ArticleFull> createArticle(@RequestBody ArticleSave dto) {
 
         ArticleFull created = articleService.create(dto);
@@ -47,12 +51,14 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MARKETING')")
     public ResponseEntity<ArticleFull> update(@PathVariable Integer id, @RequestBody ArticleFull dto) {
         ArticleFull updated = articleService.update(id, dto);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('MARKETING')")
     public ResponseEntity<Void> deleteArticle(@PathVariable Integer id) {
         articleService.deleteArticle(id);
         return ResponseEntity.noContent().build();

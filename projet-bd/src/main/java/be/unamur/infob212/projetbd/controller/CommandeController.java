@@ -7,6 +7,7 @@ import be.unamur.infob212.projetbd.service.CommandeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -21,6 +22,7 @@ public class CommandeController {
     private final CommandeService commandeService;
 
     @GetMapping
+    @PreAuthorize("hasRole('COMPTABLE')")
     public ResponseEntity<List<CommandeList>> getAll() {
         return ResponseEntity.ok(commandeService.getAll());
     }
@@ -37,11 +39,13 @@ public class CommandeController {
     }
 
     @GetMapping("/utilisateur/{utilisateurId}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<List<CommandeList>> getByUtilisateur(@PathVariable Integer utilisateurId) {
         return ResponseEntity.ok(commandeService.getByUtilisateur(utilisateurId));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<CommandeFull> create(@RequestBody CommandeSave dto) {
         try {
             CommandeFull created = commandeService.create(dto);
@@ -65,6 +69,7 @@ public class CommandeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<CommandeFull> annuler(@PathVariable Integer id) {
         try {
             return ResponseEntity.ok(commandeService.annuler(id));
