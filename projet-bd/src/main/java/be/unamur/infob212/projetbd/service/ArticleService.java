@@ -30,11 +30,8 @@ public class ArticleService {
     }
 
     public ArticleFull create(ArticleSave dto) {
-
         Article article = toEntity(dto);
-
         Article saved = articleRepository.save(article);
-
         return toFullDto(saved);
     }
 
@@ -42,17 +39,13 @@ public class ArticleService {
 
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article not found with id: " + id));
-
         Article saved = articleRepository.save(updateEntity(article, dto));
-
         return toFullDto(saved);
     }
 
-    public void deleteArticle(Integer id) {
-
+    public void delete(Integer id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article not found with id: " + id));
-
         articleRepository.delete(article);
     }
 
@@ -76,9 +69,12 @@ public class ArticleService {
 
         dto.setAuteur(article.getAuteur());
         dto.setIsbn(article.getIsbn());
+
         dto.setTaille(article.getTaille());
+
         dto.setPlateforme(article.getPlateforme());
         dto.setPegi(article.getPegi());
+
         dto.setMarque(article.getMarque());
 
         return dto;
@@ -91,11 +87,15 @@ public class ArticleService {
         article.setNom(dto.getNom());
         article.setDescription(dto.getDescription());
         article.setPrix(dto.getPrix());
+
         article.setAuteur(dto.getAuteur());
         article.setIsbn(dto.getIsbn());
+
         article.setTaille(dto.getTaille());
+
         article.setPlateforme(dto.getPlateforme());
         article.setPegi(dto.getPegi());
+
         article.setMarque(dto.getMarque());
 
         return article;
@@ -105,11 +105,15 @@ public class ArticleService {
         article.setNom(dto.getNom());
         article.setDescription(dto.getDescription());
         article.setPrix(dto.getPrix());
+
         article.setAuteur(dto.getAuteur());
         article.setIsbn(dto.getIsbn());
+
         article.setTaille(dto.getTaille());
+
         article.setPlateforme(dto.getPlateforme());
         article.setPegi(dto.getPegi());
+
         article.setMarque(dto.getMarque());
 
         return article;

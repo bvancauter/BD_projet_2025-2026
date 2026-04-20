@@ -29,19 +29,13 @@ public class ArticleController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CLIENT','MARKETING','COMPTABLE')")
     public ResponseEntity<ArticleFull> get(@PathVariable Integer id) {
-
         Optional<ArticleFull> article = articleService.get(id);
-
-        if (article.isPresent()) {
-            return ResponseEntity.ok(article.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return article.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
     @PreAuthorize("hasRole('MARKETING')")
-    public ResponseEntity<ArticleFull> createArticle(@RequestBody ArticleSave dto) {
+    public ResponseEntity<ArticleFull> create(@RequestBody ArticleSave dto) {
 
         ArticleFull created = articleService.create(dto);
         URI location = URI.create("/articles/" + created.getId());
@@ -53,14 +47,22 @@ public class ArticleController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MARKETING')")
     public ResponseEntity<ArticleFull> update(@PathVariable Integer id, @RequestBody ArticleFull dto) {
-        ArticleFull updated = articleService.update(id, dto);
-        return ResponseEntity.ok(updated);
+        try {
+            ArticleFull updated = articleService.update(id, dto);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('MARKETING')")
-    public ResponseEntity<Void> deleteArticle(@PathVariable Integer id) {
-        articleService.deleteArticle(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        try {
+            articleService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
