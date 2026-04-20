@@ -1,64 +1,73 @@
 -- ============================================================
 -- GESTION DES UTILISATEURS ET PERMISSIONS
+-- 3 rôles demandés :
+--   CLIENT
+--   COMPTABLE
+--   MARKETING
 --
--- Trois rôles sont définis :
---   • admin   : compte de l'application Spring Boot
---                  (lecture/écriture sur toutes les tables métier)
---   • comptable  : accès en lecture aux vues financières uniquement
---   • marketing  : accès en lecture aux vues produits/clients
+-- Compatible avec :
+-- Utilisateur.role = CLIENT / COMPTABLE / MARKETING
 -- ============================================================
 
 -- ------------------------------------------------------------
--- Création des utilisateurs MySQL
+-- Création des rôles MySQL
 -- ------------------------------------------------------------
-CREATE USER IF NOT EXISTS 'admin'@'%'  IDENTIFIED BY 'password';
-CREATE USER IF NOT EXISTS 'comptable'@'%' IDENTIFIED BY 'comptable_password';
-CREATE USER IF NOT EXISTS 'marketing'@'%' IDENTIFIED BY 'marketing_password';
+CREATE ROLE IF NOT EXISTS 'client';
+CREATE ROLE IF NOT EXISTS 'comptable';
+CREATE ROLE IF NOT EXISTS 'marketing';
 
 -- ------------------------------------------------------------
--- Permissions : admin
--- Accès complet aux tables pour l'application Spring Boot.
+-- Création des comptes MySQL
 -- ------------------------------------------------------------
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Utilisateur          TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Article               TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Vetement              TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Livre                 TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.JeuVideo              TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Electromenager        TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Commande              TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.LigneCommande         TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Avis                  TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Promotion             TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.UsagePromo            TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.DemandeRemboursement  TO 'admin'@'%';
-GRANT SELECT, INSERT, UPDATE, DELETE ON mydatabase.Remboursement         TO 'admin'@'%';
+CREATE USER IF NOT EXISTS 'client_user'@'%'      IDENTIFIED BY 'client_password';
+CREATE USER IF NOT EXISTS 'comptable_user'@'%'   IDENTIFIED BY 'comptable_password';
+CREATE USER IF NOT EXISTS 'marketing_user'@'%'   IDENTIFIED BY 'marketing_password';
 
--- Accès en lecture aux vues
-GRANT SELECT ON mydatabase.vue_ca_mensuel           TO 'admin'@'%';
-GRANT SELECT ON mydatabase.vue_ca_annuel            TO 'admin'@'%';
-GRANT SELECT ON mydatabase.vue_articles_populaires  TO 'admin'@'%';
-GRANT SELECT ON mydatabase.vue_clients_actifs       TO 'admin'@'%';
-GRANT SELECT ON mydatabase.vue_remboursements       TO 'admin'@'%';
+-- ============================================================
+-- ROLE CLIENT
+-- Utilisateur normal du site e-commerce
+-- ============================================================
+
+GRANT SELECT, INSERT, UPDATE ON mydatabase.Utilisateur   TO 'client';
+
+GRANT SELECT ON mydatabase.Article         TO 'client';
+GRANT SELECT ON mydatabase.Promotion       TO 'client';
+GRANT SELECT ON mydatabase.Avis            TO 'client';
+
+GRANT SELECT, INSERT ON mydatabase.Commande             TO 'client';
+GRANT SELECT, INSERT ON mydatabase.LigneCommande        TO 'client';
+GRANT SELECT, INSERT ON mydatabase.DemandeRemboursement TO 'client';
+
+-- ============================================================
+-- ROLE COMPTABLE
+-- Accès financier uniquement
+-- ============================================================
+
+GRANT SELECT ON mydatabase.vue_ca_mensuel      TO 'comptable';
+GRANT SELECT ON mydatabase.vue_ca_annuel       TO 'comptable';
+GRANT SELECT ON mydatabase.vue_remboursements  TO 'comptable';
+GRANT SELECT ON mydatabase.Remboursement       TO 'comptable';
+
+-- ============================================================
+-- ROLE MARKETING
+-- Analyse produits / clients
+-- ============================================================
+
+GRANT SELECT ON mydatabase.vue_articles_populaires TO 'marketing';
+GRANT SELECT ON mydatabase.vue_clients_actifs      TO 'marketing';
+GRANT SELECT ON mydatabase.Article                 TO 'marketing';
+GRANT SELECT ON mydatabase.Avis                    TO 'marketing';
+GRANT SELECT ON mydatabase.Promotion               TO 'marketing';
 
 -- ------------------------------------------------------------
--- Permissions : comptable
--- Lecture seule sur les vues financières et les remboursements.
--- Aucun accès direct aux tables (ni aux données personnelles).
+-- Attribution des rôles
 -- ------------------------------------------------------------
-GRANT SELECT ON mydatabase.vue_ca_mensuel     TO 'comptable'@'%';
-GRANT SELECT ON mydatabase.vue_ca_annuel      TO 'comptable'@'%';
-GRANT SELECT ON mydatabase.vue_remboursements TO 'comptable'@'%';
+GRANT 'client'     TO 'client_user'@'%';
+GRANT 'comptable' TO 'comptable_user'@'%';
+GRANT 'marketing' TO 'marketing_user'@'%';
 
--- ------------------------------------------------------------
--- Permissions : marketing
--- Lecture seule sur les vues produits et clients, ainsi que
--- sur les tables Promotion et Avis.
--- Pas d'accès aux données financières ni aux mots de passe.
--- ------------------------------------------------------------
-GRANT SELECT ON mydatabase.vue_articles_populaires TO 'marketing'@'%';
-GRANT SELECT ON mydatabase.vue_clients_actifs      TO 'marketing'@'%';
-GRANT SELECT ON mydatabase.Promotion               TO 'marketing'@'%';
-GRANT SELECT ON mydatabase.Avis                    TO 'marketing'@'%';
-GRANT SELECT ON mydatabase.Article                 TO 'marketing'@'%';
+SET DEFAULT ROLE 'client'     TO 'client_user'@'%';
+SET DEFAULT ROLE 'comptable' TO 'comptable_user'@'%';
+SET DEFAULT ROLE 'marketing' TO 'marketing_user'@'%';
 
 FLUSH PRIVILEGES;

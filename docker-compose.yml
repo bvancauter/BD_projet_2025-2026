@@ -2,13 +2,16 @@ services:
   mysql:
     image: mysql:latest
     ports:
-      - 3306:3306
+      - "3306:3306"
+
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=mydatabase
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+
     volumes:
-      - "./data.sql:/docker-entrypoint-initdb.d/1.sql"
-      - "./triggers.sql:/docker-entrypoint-initdb.d/2_triggers.sql"
-      - "./views.sql:/docker-entrypoint-initdb.d/3_views.sql"
+      - ./data.sql:/docker-entrypoint-initdb.d/1_data.sql
+      - ./triggers.sql:/docker-entrypoint-initdb.d/2_triggers.sql
+      - ./views.sql:/docker-entrypoint-initdb.d/3_views.sql
+      - ./permissions.sql:/docker-entrypoint-initdb.d/4_permissions.sql
