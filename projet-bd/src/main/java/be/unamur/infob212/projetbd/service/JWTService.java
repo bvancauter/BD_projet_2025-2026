@@ -12,9 +12,10 @@ public class JWTService {
     private final String SECRET =
             "monSuperSecretJwtTokenUltraLongMinimum256Bits";
 
-    public String generateToken(String email) {
+    public String generateToken(String email, String role) {
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(Keys.hmacShaKeyFor(SECRET.getBytes()))

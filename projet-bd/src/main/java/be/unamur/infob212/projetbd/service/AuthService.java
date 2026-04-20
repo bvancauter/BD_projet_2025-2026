@@ -56,6 +56,6 @@ public class AuthService {
             throw new RuntimeException("BAD_PASSWORD");
         }
 
-        return jwtService.generateToken(user.getEmail());
+        return jwtService.generateToken(user.getEmail(), user.getRole().name());
     }
 }
