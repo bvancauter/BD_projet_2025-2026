@@ -135,27 +135,34 @@ VALUES
 ('dave@example.com', 'Dave', 'Leroy', '0615161718', 'Rue de la Paix', '78', 'Marseille', '13001', '$2a$10$k.fxzR1vmug4LJNdVGDFC.ek5BQEOV7uNVn5efeROlf3Hg7QNilFa', 'Carte bancaire', 'MARKETING'), -- mdpDave123
 ('eve@example.com', 'Eve', 'Moreau', '0619202122', 'Place Bellecour', '90', 'Lyon', '69002', '$2a$10$K18VGJ8RBLUqNABb4LVWiewMFc0j0WD6ilC6.Jt.iUcJjqrmzgfzK', 'Paypal', 'CLIENT'); -- mdpEve123
 
-INSERT INTO Article (nom, description, prix) VALUES
-('T-shirt Rouge', 'T-shirt 100% coton, rouge', 19.99),
-('Jean Bleu', 'Jean slim bleu', 49.99),
-('Le Petit Prince', 'Livre classique de Saint-Exupéry', 12.50),
-('Harry Potter Tome 1', 'Livre de J.K. Rowling', 15.00),
-('Shenmue', 'Jeu d\'action-aventure', 59.99),
-('Resident Evil', 'Jeu de surivial horror', 69.99),
-('Mixeur Philips', 'Mixeur 800W', 89.99),
-('Aspirateur Dyson', 'Aspirateur sans fil', 299.99);
+INSERT INTO Article (nom, description, prix, type, taille)
+VALUES ('T-shirt Rouge', 'T-shirt 100% coton, rouge', 19.99, 'VETEMENT', 'M');
 
-UPDATE Article SET type = 'VETEMENT', taille = 'M' WHERE id = 1;
-UPDATE Article SET type = 'VETEMENT', taille = 'L' WHERE id = 2;
+INSERT INTO Article (nom, description, prix, type, taille)
+VALUES ('Jean Bleu', 'Jean slim bleu', 49.99, 'VETEMENT', 'L');
 
-UPDATE Article SET type = 'LIVRE', auteur = 'Antoine de Saint-Exupéry', isbn = '978-0156012195' WHERE id = 3;
-UPDATE Article SET type = 'LIVRE', auteur = 'J.K. Rowling', isbn = '978-0747532699' WHERE id = 4;
+INSERT INTO Article (nom, description, prix, type, auteur, isbn)
+VALUES ('Le Petit Prince', 'Livre classique de Saint-Exupéry', 12.50, 'LIVRE',
+        'Antoine de Saint-Exupéry', '978-0156012195');
 
-UPDATE Article SET type = 'JEUVIDEO', plateforme = 'Dreamcast', pegi = 12 WHERE id = 5;
-UPDATE Article SET type = 'JEUVIDEO', plateforme = 'PC', pegi = 18 WHERE id = 6;
+INSERT INTO Article (nom, description, prix, type, auteur, isbn)
+VALUES ('Harry Potter Tome 1', 'Livre de J.K. Rowling', 15.00, 'LIVRE',
+        'J.K. Rowling', '978-0747532699');
 
-UPDATE Article SET type = 'ELECTRO', marque = 'Philips' WHERE id = 7;
-UPDATE Article SET type = 'ELECTRO', marque = 'Dyson' WHERE id = 8;
+INSERT INTO Article (nom, description, prix, type, plateforme, pegi)
+VALUES ('Shenmue', 'Jeu d''action-aventure', 59.99, 'JEUVIDEO',
+        'Dreamcast', 12);
+
+INSERT INTO Article (nom, description, prix, type, plateforme, pegi)
+VALUES ('Resident Evil', 'Jeu de survival horror', 69.99, 'JEUVIDEO',
+        'PC', 18);
+
+INSERT INTO Article (nom, description, prix, type, marque)
+VALUES ('Mixeur Philips', 'Mixeur 800W', 89.99, 'ELECTRO', 'Philips');
+
+INSERT INTO Article (nom, description, prix, type, marque)
+VALUES ('Aspirateur Dyson', 'Aspirateur sans fil', 299.99, 'ELECTRO', 'Dyson');
+
 
 INSERT INTO Commande (date_paiement, date_livraison, statut, utilisateur_id) VALUES
 ('2026-03-01 10:00:00', '2026-03-03 14:00:00', 'LIVREE', 1),
