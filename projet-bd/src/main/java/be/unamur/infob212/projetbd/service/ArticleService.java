@@ -55,6 +55,7 @@ public class ArticleService {
         dto.setNom(article.getNom());
         dto.setDescription(article.getDescription());
         dto.setPrix(article.getPrix());
+        dto.setType(article.getType());
 
         return dto;
     }
