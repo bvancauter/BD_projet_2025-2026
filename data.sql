@@ -20,7 +20,7 @@ CREATE TABLE Article (
     description TEXT NOT NULL,
     prix DECIMAL(10,2) NOT NULL CHECK (prix > 0),
 
-    type ENUM('LIVRE','VETEMENT','JEUVIDEO','ELECTRO') NOT NULL,
+    type ENUM('LIVRE','VETEMENT','JEUVIDEO','ELECTRO') NULL,
 
     auteur VARCHAR(255),
     isbn VARCHAR(50),

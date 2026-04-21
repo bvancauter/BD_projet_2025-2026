@@ -3,7 +3,10 @@ package be.unamur.infob212.projetbd.controller;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeFull;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeList;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeSave;
+import be.unamur.infob212.projetbd.dto.UsagePromo.UsagePromoFull;
+import be.unamur.infob212.projetbd.dto.UsagePromo.UsagePromoSave;
 import be.unamur.infob212.projetbd.service.CommandeService;
+import be.unamur.infob212.projetbd.service.UsagePromoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,8 @@ import java.util.Optional;
 public class CommandeController {
 
     private final CommandeService commandeService;
+    private final UsagePromoService usagePromoService;
+
 
     @GetMapping
     @PreAuthorize("hasRole('COMPTABLE')")
@@ -85,5 +90,22 @@ public class CommandeController {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+
+    @PostMapping("/{commandeId}/promotions")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<UsagePromoFull> applyPromotion(
+            @PathVariable Integer commandeId,
+            @RequestBody UsagePromoSave dto) {
+
+        dto.setCommandeId(commandeId);
+        return ResponseEntity.ok(usagePromoService.create(dto));
+    }
+
+    @GetMapping("/{commandeId}/promotions")
+    public ResponseEntity<List<UsagePromoFull>> getPromotionsForCommande(
+            @PathVariable Integer commandeId) {
+
+        return ResponseEntity.ok(usagePromoService.getByCommande(commandeId));
     }
 }
