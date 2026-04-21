@@ -20,7 +20,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Projet BD API")
                         .version("1.0")
-                        .description("API avec JWT")
+                        .description("API d'un site de vente en ligne")
                 )
                 .addSecurityItem(
                         new SecurityRequirement()
