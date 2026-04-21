@@ -5,6 +5,7 @@ import be.unamur.infob212.projetbd.dto.Commande.CommandeFull;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeList;
 import be.unamur.infob212.projetbd.dto.Commande.CommandeSave;
 import be.unamur.infob212.projetbd.dto.Commande.LigneCommandeDto;
+import be.unamur.infob212.projetbd.dto.UsagePromo.UsagePromoSave;
 import be.unamur.infob212.projetbd.model.Commande;
 import be.unamur.infob212.projetbd.model.LigneCommande;
 import be.unamur.infob212.projetbd.model.LigneCommandeId;
@@ -27,6 +28,7 @@ public class CommandeService {
     private final LigneCommandeRepository ligneCommandeRepository;
     private final ArticleRepository articleRepository;
     private final UtilisateurRepository utilisateurRepository;
+    private final UsagePromoService usagePromoService;
 
     public List<CommandeList> getAll() {
         return commandeRepository.findAll()
@@ -73,6 +75,14 @@ public class CommandeService {
         for (LigneCommandeDto ligne : dto.getLignes()) {
             LigneCommandeId ligneId = new LigneCommandeId(saved.getId(), ligne.getArticleId());
             ligneCommandeRepository.save(new LigneCommande(ligneId, ligne.getQuantite()));
+        }
+
+        if (dto.getPromotions() != null) {
+            for (UsagePromoSave promo : dto.getPromotions()) {
+                promo.setCommandeId(commande.getId());
+                promo.setUtilisateurId(dto.getUtilisateurId());
+                usagePromoService.create(promo);
+            }
         }
 
         return toFullDto(saved);

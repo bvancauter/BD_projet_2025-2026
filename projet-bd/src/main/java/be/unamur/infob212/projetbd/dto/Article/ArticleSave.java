@@ -8,7 +8,7 @@ public class ArticleSave {
     private String nom;
     private String description;
     private Double prix;
-
+    private String type;
     private String auteur;
     private String isbn;
 

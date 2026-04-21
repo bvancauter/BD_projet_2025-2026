@@ -66,6 +66,7 @@ public class ArticleService {
         dto.setNom(article.getNom());
         dto.setDescription(article.getDescription());
         dto.setPrix(article.getPrix());
+        dto.setType(article.getType());
 
         dto.setAuteur(article.getAuteur());
         dto.setIsbn(article.getIsbn());
@@ -88,6 +89,8 @@ public class ArticleService {
         article.setDescription(dto.getDescription());
         article.setPrix(dto.getPrix());
 
+        article.setType(dto.getType());
+
         article.setAuteur(dto.getAuteur());
         article.setIsbn(dto.getIsbn());
 
@@ -105,6 +108,7 @@ public class ArticleService {
         article.setNom(dto.getNom());
         article.setDescription(dto.getDescription());
         article.setPrix(dto.getPrix());
+        article.setType(dto.getType());
 
         article.setAuteur(dto.getAuteur());
         article.setIsbn(dto.getIsbn());

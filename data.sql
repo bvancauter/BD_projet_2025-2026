@@ -20,7 +20,7 @@ CREATE TABLE Article (
     description TEXT NOT NULL,
     prix DECIMAL(10,2) NOT NULL CHECK (prix > 0),
 
-    type ENUM('LIVRE','VETEMENT','JEUVIDEO','ELECTRO') NULL,
+    type ENUM('ARTICLE','LIVRE','VETEMENT','JEUVIDEO','ELECTRO') NOT NULL DEFAULT 'ARTICLE',
 
     auteur VARCHAR(255),
     isbn VARCHAR(50),
@@ -163,6 +163,9 @@ VALUES ('Mixeur Philips', 'Mixeur 800W', 89.99, 'ELECTRO', 'Philips');
 INSERT INTO Article (nom, description, prix, type, marque)
 VALUES ('Aspirateur Dyson', 'Aspirateur sans fil', 299.99, 'ELECTRO', 'Dyson');
 
+INSERT INTO Article (nom, description, prix, type)
+VALUES ('Article générique', 'Article sans catégorie spécifique', 9.99, 'ARTICLE');
+
 
 INSERT INTO Commande (date_paiement, date_livraison, statut, utilisateur_id) VALUES
 ('2026-03-01 10:00:00', '2026-03-03 14:00:00', 'LIVREE', 1),
@@ -204,9 +207,10 @@ INSERT INTO Remboursement (demande_remboursement_id, date_remboursement) VALUES
 
 ALTER TABLE Article
 ADD CONSTRAINT chk_article_type CHECK (
-    type IS NULL
+    (type = 'ARTICLE'  AND auteur IS NULL AND isbn IS NULL AND taille IS NULL AND plateforme IS NULL AND pegi IS NULL AND marque IS NULL)
  OR (type = 'LIVRE'    AND auteur IS NOT NULL AND isbn IS NOT NULL AND taille IS NULL AND plateforme IS NULL AND pegi IS NULL AND marque IS NULL)
  OR (type = 'VETEMENT' AND taille IS NOT NULL AND auteur IS NULL AND isbn IS NULL AND plateforme IS NULL AND pegi IS NULL AND marque IS NULL)
  OR (type = 'JEUVIDEO' AND plateforme IS NOT NULL AND pegi IS NOT NULL AND auteur IS NULL AND isbn IS NULL AND taille IS NULL AND marque IS NULL)
  OR (type = 'ELECTRO'  AND marque IS NOT NULL AND auteur IS NULL AND isbn IS NULL AND taille IS NULL AND plateforme IS NULL AND pegi IS NULL)
 );
+
