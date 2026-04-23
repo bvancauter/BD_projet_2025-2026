@@ -21,6 +21,7 @@ public class RemboursementService {
     private final DemandeRemboursementRepository demandeRepository;
     private final RemboursementRepository remboursementRepository;
     private final CommandeRepository commandeRepository;
+    private final CommandeService commandeService;
 
     public List<DemandeRemboursementFull> getAllDemandes() {
         return demandeRepository.findAll()
@@ -72,9 +73,11 @@ public class RemboursementService {
     private DemandeRemboursementFull toDemandeFull(DemandeRemboursement demande) {
         DemandeRemboursementFull dto = new DemandeRemboursementFull();
         dto.setId(demande.getId());
-        dto.setCommandeId(demande.getCommandeId());
         dto.setDateDemande(demande.getDateDemande());
         dto.setRaison(demande.getRaison());
+
+        commandeService.get(demande.getCommandeId())
+                .ifPresent(dto::setCommande);
 
         remboursementRepository.findByDemandeRemboursementId(demande.getId())
                 .ifPresent(r -> dto.setRemboursement(toRemboursementFull(r)));

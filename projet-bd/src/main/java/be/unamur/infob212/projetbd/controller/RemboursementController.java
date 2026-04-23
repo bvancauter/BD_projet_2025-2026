@@ -40,7 +40,7 @@ public class RemboursementController {
     public ResponseEntity<DemandeRemboursementFull> createDemande(@RequestBody DemandeRemboursementSave dto) {
         try {
             DemandeRemboursementFull created = remboursementService.createDemande(dto);
-            URI location = URI.create("/remboursements/demandes/commande/" + created.getCommandeId());
+            URI location = URI.create("/remboursements/demandes/commande/" + created.getCommande().getId());
             return ResponseEntity.created(location).body(created);
 
         } catch (RuntimeException e) {
