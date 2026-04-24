@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class AvisSave {
-    private Integer utilisateurId;
     private Integer articleId;
     private Integer commandeId;
     private Integer note;

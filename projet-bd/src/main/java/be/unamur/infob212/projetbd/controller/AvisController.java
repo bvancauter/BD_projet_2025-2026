@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -32,9 +33,10 @@ public class AvisController {
 
     @PostMapping
     @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<AvisFull> create(@RequestBody AvisSave dto) {
+    public ResponseEntity<AvisFull> create(@RequestBody AvisSave dto, Authentication authentication) {
         try {
-            AvisFull created = avisService.create(dto);
+            String email = authentication.getName();
+            AvisFull created = avisService.create(dto, email);
             URI location = URI.create("/avis/article/" + created.getArticleId());
             return ResponseEntity.created(location).body(created);
 

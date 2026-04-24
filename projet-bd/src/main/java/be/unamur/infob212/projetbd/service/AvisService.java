@@ -4,6 +4,7 @@ import be.unamur.infob212.projetbd.dto.Avis.AvisFull;
 import be.unamur.infob212.projetbd.dto.Avis.AvisSave;
 import be.unamur.infob212.projetbd.model.Avis;
 import be.unamur.infob212.projetbd.model.AvisId;
+import be.unamur.infob212.projetbd.model.Utilisateur;
 import be.unamur.infob212.projetbd.repository.ArticleRepository;
 import be.unamur.infob212.projetbd.repository.AvisRepository;
 import be.unamur.infob212.projetbd.repository.CommandeRepository;
@@ -37,11 +38,10 @@ public class AvisService {
                 .toList();
     }
 
-    public AvisFull create(AvisSave dto) {
+    public AvisFull create(AvisSave dto, String email) {
 
-        if (utilisateurRepository.findById(dto.getUtilisateurId()).isEmpty()) {
-            throw new RuntimeException("UTILISATEUR_NOT_FOUND");
-        }
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("UTILISATEUR_NOT_FOUND"));
 
         if (articleRepository.findById(dto.getArticleId()).isEmpty()) {
             throw new RuntimeException("ARTICLE_NOT_FOUND");
@@ -51,7 +51,7 @@ public class AvisService {
             throw new RuntimeException("COMMANDE_NOT_FOUND");
         }
 
-        AvisId id = new AvisId(dto.getUtilisateurId(), dto.getArticleId(), dto.getCommandeId());
+        AvisId id = new AvisId(utilisateur.getId(), dto.getArticleId(), dto.getCommandeId());
 
         if (avisRepository.existsById(id)) {
             throw new RuntimeException("AVIS_ALREADY_EXISTS");
