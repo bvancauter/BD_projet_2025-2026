@@ -7,7 +7,6 @@ import java.util.List;
 
 @Data
 public class CommandeSave {
-    private Integer utilisateurId;
-    private List<LigneCommandeDto> lignes;
+    private List<LigneCommandeSave> lignes;
     private List<UsagePromoSave> promotions;
 }

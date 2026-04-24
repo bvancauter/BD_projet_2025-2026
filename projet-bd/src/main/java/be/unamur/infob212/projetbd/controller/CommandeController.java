@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -51,10 +52,14 @@ public class CommandeController {
 
     @PostMapping
     @PreAuthorize("hasRole('CLIENT')")
-    public ResponseEntity<CommandeFull> create(@RequestBody CommandeSave dto) {
+    public ResponseEntity<CommandeFull> create(@RequestBody CommandeSave dto, Authentication authentication) {
         try {
-            CommandeFull created = commandeService.create(dto);
+            String email = authentication.getName();
+
+            CommandeFull created = commandeService.create(dto, email);
+
             URI location = URI.create("/commandes/" + created.getId());
+
             return ResponseEntity.created(location).body(created);
 
         } catch (RuntimeException e) {
@@ -62,14 +67,16 @@ public class CommandeController {
             if (e.getMessage().equals("UTILISATEUR_NOT_FOUND")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
             if (e.getMessage().equals("ARTICLE_NOT_FOUND")) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
             if (e.getMessage().equals("LIGNES_EMPTY")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                return ResponseEntity.badRequest().build();
             }
 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.badRequest().build();
         }
     }
 

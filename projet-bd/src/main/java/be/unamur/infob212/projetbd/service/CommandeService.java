@@ -1,14 +1,12 @@
 package be.unamur.infob212.projetbd.service;
 
 import be.unamur.infob212.projetbd.dto.Article.ArticleList;
-import be.unamur.infob212.projetbd.dto.Commande.CommandeFull;
-import be.unamur.infob212.projetbd.dto.Commande.CommandeList;
-import be.unamur.infob212.projetbd.dto.Commande.CommandeSave;
-import be.unamur.infob212.projetbd.dto.Commande.LigneCommandeDto;
+import be.unamur.infob212.projetbd.dto.Commande.*;
 import be.unamur.infob212.projetbd.dto.UsagePromo.UsagePromoSave;
 import be.unamur.infob212.projetbd.model.Commande;
 import be.unamur.infob212.projetbd.model.LigneCommande;
 import be.unamur.infob212.projetbd.model.LigneCommandeId;
+import be.unamur.infob212.projetbd.model.Utilisateur;
 import be.unamur.infob212.projetbd.repository.ArticleRepository;
 import be.unamur.infob212.projetbd.repository.CommandeRepository;
 import be.unamur.infob212.projetbd.repository.LigneCommandeRepository;
@@ -49,30 +47,29 @@ public class CommandeService {
                 .toList();
     }
 
-    public CommandeFull create(CommandeSave dto) {
+    public CommandeFull create(CommandeSave dto, String email) {
 
-        if (utilisateurRepository.findById(dto.getUtilisateurId()).isEmpty()) {
-            throw new RuntimeException("UTILISATEUR_NOT_FOUND");
-        }
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("UTILISATEUR_NOT_FOUND"));
 
         if (dto.getLignes() == null || dto.getLignes().isEmpty()) {
             throw new RuntimeException("LIGNES_EMPTY");
         }
 
-        for (LigneCommandeDto ligne : dto.getLignes()) {
+        for (LigneCommandeSave ligne : dto.getLignes()) {
             if (articleRepository.findById(ligne.getArticleId()).isEmpty()) {
                 throw new RuntimeException("ARTICLE_NOT_FOUND");
             }
         }
 
         Commande commande = new Commande();
-        commande.setUtilisateurId(dto.getUtilisateurId());
+        commande.setUtilisateurId(utilisateur.getId());
         commande.setDatePaiement(LocalDateTime.now());
         commande.setStatut(Commande.Statut.EN_ATTENTE);
 
         Commande saved = commandeRepository.save(commande);
 
-        for (LigneCommandeDto ligne : dto.getLignes()) {
+        for (LigneCommandeSave ligne : dto.getLignes()) {
             LigneCommandeId ligneId = new LigneCommandeId(saved.getId(), ligne.getArticleId());
             ligneCommandeRepository.save(new LigneCommande(ligneId, ligne.getQuantite()));
         }
@@ -80,7 +77,7 @@ public class CommandeService {
         if (dto.getPromotions() != null) {
             for (UsagePromoSave promo : dto.getPromotions()) {
                 promo.setCommandeId(commande.getId());
-                promo.setUtilisateurId(dto.getUtilisateurId());
+                promo.setUtilisateurId(utilisateur.getId());
                 usagePromoService.create(promo);
             }
         }
