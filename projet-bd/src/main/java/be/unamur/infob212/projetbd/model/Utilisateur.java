@@ -42,6 +42,9 @@ public class Utilisateur {
     @Column(name = "methode_paiement")
     private String methodePaiement;
 
+    @Column(name = "est_archive")
+    private boolean estArchive = false;
+
     public enum Role {
         CLIENT,
         COMPTABLE,

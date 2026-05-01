@@ -11,7 +11,8 @@ CREATE TABLE Utilisateur (
     adr_code_postal VARCHAR(20) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
     role ENUM('CLIENT','COMPTABLE','MARKETING') NOT NULL DEFAULT 'CLIENT',
-    methode_paiement VARCHAR(100) NOT NULL
+    methode_paiement VARCHAR(100) NOT NULL,
+    est_archive BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE Article (
