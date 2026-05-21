@@ -137,13 +137,18 @@ create table Vetement (
 -- Constraints Section
 -- ___________________ 
 
+-- ARTICLE
 alter table Article add constraint EXCL_Article
      check((Livre is not null and Electromenager is null and JeuVideo is null and Vetement is null)
            or (Livre is null and Electromenager is not null and JeuVideo is null and Vetement is null)
            or (Livre is null and Electromenager is null and JeuVideo is not null and Vetement is null)
            or (Livre is null and Electromenager is null and JeuVideo is null and Vetement is not null)
-           or (Livre is null and Electromenager is null and JeuVideo is null and Vetement is null)); 
+           or (Livre is null and Electromenager is null and JeuVideo is null and Vetement is null));
+-- prix > 0
+alter table Article add constraint CHK_Article_prix_pos
+     check (prix > 0);
 
+-- AVIS
 alter table Avis add constraint FKAvi_Uti
      foreign key (utilisateurId)
      references Utilisateur;
@@ -156,6 +161,11 @@ alter table Avis add constraint FKAvi_Art_FK
      foreign key (articleId)
      references Article;
 
+-- note entre 1 et 5
+alter table Avis add constraint CHK_Avis_note
+     check (note between 1 and 5);
+
+-- COMMANDE
 alter table Commande add constraint EXCL_Commande
      check((dateLivraison is not null and dateAnnulation is null)
            or (dateLivraison is null and dateAnnulation is not null)
@@ -165,18 +175,37 @@ alter table Commande add constraint FKcommande_FK
      foreign key (utilisateurId)
      references Utilisateur;
 
+-- cohérence des dates
+alter table Commande add constraint CHK_Commande_dates
+     check (
+         (dateLivraison is null or dateLivraison >= datePaiement)
+     );
+
+alter table Commande add constraint CHK_Commande_dates_annulation
+     check (
+         (dateAnnulation is null or dateAnnulation >= datePaiement)
+     );
+
+-- DEMANDEREMBOURSEMENT
 alter table DemandeRemboursement add constraint FKestEnLien_FK
      foreign key (commandId)
      references Commande;
 
+-- ELECTROMENAGER
 alter table Electromenager add constraint FKArt_Ele_FK
      foreign key (articleId)
      references Article;
 
+-- JEUVIDEO
 alter table JeuVideo add constraint FKArt_Jeu_FK
      foreign key (articleId)
      references Article;
 
+-- PEGI dans {3,7,12,16,18}
+alter table JeuVideo add constraint CHK_JeuVideo_pegi
+     check (PEGI in (3,7,12,16,18));
+
+-- LIGNEDECOMMANDE
 alter table LigneDeCommande add constraint FKcontient
      foreign key (articleId)
      references Article;
@@ -185,18 +214,34 @@ alter table LigneDeCommande add constraint FKappartient_FK
      foreign key (commandId)
      references Commande;
 
+-- quantite > 0
+alter table LigneDeCommande add constraint CHK_LigneDeCommande_quantite
+     check (quantite > 0);
+
+-- LIVRE
 alter table Livre add constraint FKArt_Liv_FK
      foreign key (articleId)
      references Article;
 
+-- PROMOTION
 alter table Promotion add constraint COEX_Promotion
      check((dateDebut is not null and dateFin is not null)
-           or (dateDebut is null and dateFin is null)); 
+           or (dateDebut is null and dateFin is null));
 
+-- pourcentage entre 0 et 100
+alter table Promotion add constraint CHK_Promotion_pourcentage
+     check (pourcentage between 0 and 100);
+
+-- dateFin >= dateDebut
+alter table Promotion add constraint CHK_Promotion_dates
+     check (dateFin is null or dateFin >= dateDebut);
+
+-- REMBOURSEMENT
 alter table Remboursement add constraint FKDonneLieuA_FK
      foreign key (demandeRemboursementId)
      references DemandeRemboursement;
 
+-- USAGEPROMO
 alter table UsagePromo add constraint FKUsa_Uti
      foreign key (utilisateurId)
      references Utilisateur;
@@ -209,6 +254,7 @@ alter table UsagePromo add constraint FKUsa_Art_FK
      foreign key (articleId)
      references Article;
 
+-- VETEMENT
 alter table Vetement add constraint FKArt_Vet_FK
      foreign key (articleId)
      references Article;
